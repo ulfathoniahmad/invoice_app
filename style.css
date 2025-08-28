@@ -1,82 +1,31 @@
-/* Reset sederhana */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: Arial, sans-serif; background:#f4f4f4; }
+.container { max-width: 900px; margin:20px auto; }
+h1 { text-align:center; margin-bottom:20px; color:#333; }
+h2 { margin-bottom:15px; color:#444; }
 
-/* Container utama */
-.container {
-  max-width: 900px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-}
+.card { background:#fff; padding:20px; margin-bottom:25px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
 
-/* Judul */
-h1 { text-align: center; margin-bottom: 20px; color: #333; }
-h2 { margin-bottom: 15px; color: #444; }
+.form-group { margin-bottom:15px; }
+.form-group label { display:block; margin-bottom:5px; font-weight:bold; }
+.form-group input, .form-group select { width:100%; padding:8px 12px; border-radius:5px; border:1px solid #ccc; font-size:1rem; }
 
-/* Card box */
-.card {
-  background: #fff;
-  padding: 20px;
-  margin-bottom: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+.btn { background:#007bff; color:#fff; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-size:1rem; }
+.btn:hover { background:#0056b3; }
 
-/* Form group */
-.form-group {
-  margin-bottom: 15px;
-}
+#invoiceResult table, #tableData { width:100%; border-collapse: collapse; margin-top:15px; }
+#invoiceResult th, #invoiceResult td, #tableData th, #tableData td { border:1px solid #ccc; padding:10px; text-align:center; }
+#invoiceResult th, #tableData th { background:#007bff; color:#fff; }
+#invoiceResult tr:nth-child(even), #tableData tr:nth-child(even) { background:#f9f9f9; }
 
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
+/* Tabs */
+.tabs { overflow:hidden; border-bottom:1px solid #ccc; margin-bottom:20px; }
+.tablink { background:#f1f1f1; float:left; border:none; outline:none; cursor:pointer; padding:10px 20px; transition:0.3s; font-size:16px; }
+.tablink:hover { background:#ddd; }
+.tablink.active { background:#007bff; color:#fff; }
+.tabcontent { display:none; }
+.tabcontent.active { display:block; }
 
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-/* Button */
-.btn {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn:hover { background-color: #0056b3; }
-
-/* Tabel invoice */
-#invoiceResult table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-#invoiceResult th, #invoiceResult td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-}
-
-#invoiceResult th {
-  background-color: #007bff;
-  color: white;
-}
-
-#invoiceResult tr:nth-child(even) { background-color: #f9f9f9; }
-
-/* Responsif */
-@media (max-width: 600px) {
-  .form-group input, .form-group select, .btn {
-    font-size: 0.9rem;
-  }
+@media (max-width:600px){
+  .form-group input, .form-group select, .btn { font-size:0.9rem; }
 }
