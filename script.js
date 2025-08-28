@@ -1,4 +1,4 @@
-const API_URL = "YOUR_APPS_SCRIPT_URL"; // ganti dengan URL Apps Script mu
+const API_URL = "https://script.google.com/macros/s/AKfycbxuwb0XAdjMRbBbx5H7PpgiSktMQYv7-ix8GAFClXL8vx6vElkvBsnQjq5rqPycxu5PGQ/exec"; // ganti dengan URL Apps Script mu
 
 // List pembeli (bisa ambil dari Sheet)
 const pembeliList = ["SPPG Po 001","SPPG Slah 002"];
