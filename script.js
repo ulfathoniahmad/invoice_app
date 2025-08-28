@@ -1,6 +1,6 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzfcKJfe-TyIRlgdWjVnjEcFjsLk2j3O4J0avai96H3dm6ga_O7ehYYeHkRYdRFddi30w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyY2vajFg7_xa8tZemkiXVNR0t8c2oviW4UeNNTKlrbJQYDCOaG8Wz3X5RoJLgMJ2pBuQ/exec";
 
-// Load pembeli ke dropdown
+// Load dropdown pembeli
 async function loadPembeli(){
   try{
     const res = await fetch(`${API_URL}?function=getPembeliList`);
@@ -39,7 +39,7 @@ document.getElementById('formInvoice').addEventListener('submit', async function
   document.getElementById('formInvoice').reset();
 });
 
-// Cetak invoice (per tanggal & pembeli)
+// Cetak invoice
 document.getElementById('btnFilter').addEventListener('click', async function(){
   const tanggal = document.getElementById('filterTanggal').value;
   const pembeli = document.getElementById('filterPembeli').value;
