@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbx0gRYgOVzK5C6-yraXCLbnu6W34BgZPG_VEFwSq_8rBDMwRX4nuWonJCa5NP4T7ion9A/exec"; // ganti dengan URL Web App Apps Script
+const API_URL = "https://script.google.com/macros/s/AKfycbxn59dew_a75v2199W2R3LpUWfWDd2g5EYl-iGYQOQtbuOrs8glHCKyXqRAF290ot7Z0g/exec"; // ganti dengan URL Web App Apps Script
 
 // Tabs
 function openTab(evt, tabName){
