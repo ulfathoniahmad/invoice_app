@@ -7,50 +7,83 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="container">
   <h1>Web Invoice</h1>
 
-  <!-- Form Tambah Invoice -->
-  <div class="card">
-    <h2>Tambah Invoice</h2>
-    <form id="formInvoice">
-      <div class="form-group">
-        <label for="tanggal">Tanggal</label>
-        <input type="date" id="tanggal" required>
-      </div>
-      <div class="form-group">
-        <label for="namaProduk">Nama Produk</label>
-        <input type="text" id="namaProduk" placeholder="Nama Produk" required>
-      </div>
-      <div class="form-group">
-        <label for="jumlah">Jumlah</label>
-        <input type="number" id="jumlah" placeholder="Jumlah" required>
-      </div>
-      <div class="form-group">
-        <label for="harga">Harga</label>
-        <input type="number" id="harga" placeholder="Harga" required>
-      </div>
-      <div class="form-group">
-        <label for="pembeli">Pembeli</label>
-        <select id="pembeli" required></select>
-      </div>
-      <button type="submit" class="btn">Tambah Invoice</button>
-    </form>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tablink active" onclick="openTab(event,'tambah')">Tambah Invoice</button>
+    <button class="tablink" onclick="openTab(event,'cetak')">Cetak Invoice</button>
+    <button class="tablink" onclick="openTab(event,'lihat')">Lihat Data</button>
   </div>
 
-  <!-- Filter Invoice -->
-  <div class="card">
-    <h2>Cetak Invoice</h2>
-    <div class="form-group">
-      <label for="filterTanggal">Tanggal</label>
-      <input type="date" id="filterTanggal" required>
+  <!-- Tab Tambah -->
+  <div id="tambah" class="tabcontent active">
+    <div class="card">
+      <h2>Tambah Invoice</h2>
+      <form id="formInvoice">
+        <div class="form-group">
+          <label for="tanggal">Tanggal</label>
+          <input type="date" id="tanggal" required>
+        </div>
+        <div class="form-group">
+          <label for="namaProduk">Nama Produk</label>
+          <input type="text" id="namaProduk" placeholder="Nama Produk" required>
+        </div>
+        <div class="form-group">
+          <label for="jumlah">Jumlah</label>
+          <input type="number" id="jumlah" placeholder="Jumlah" required>
+        </div>
+        <div class="form-group">
+          <label for="harga">Harga</label>
+          <input type="number" id="harga" placeholder="Harga" required>
+        </div>
+        <div class="form-group">
+          <label for="pembeli">Pembeli</label>
+          <select id="pembeli" required></select>
+        </div>
+        <button type="submit" class="btn">Tambah Invoice</button>
+      </form>
     </div>
-    <div class="form-group">
-      <label for="filterPembeli">Pembeli</label>
-      <select id="filterPembeli" required></select>
+  </div>
+
+  <!-- Tab Cetak -->
+  <div id="cetak" class="tabcontent">
+    <div class="card">
+      <h2>Cetak Invoice</h2>
+      <div class="form-group">
+        <label for="filterTanggal">Tanggal</label>
+        <input type="date" id="filterTanggal" required>
+      </div>
+      <div class="form-group">
+        <label for="filterPembeli">Pembeli</label>
+        <select id="filterPembeli" required></select>
+      </div>
+      <button id="btnFilter" class="btn">Cetak Invoice</button>
+      <div id="invoiceResult"></div>
     </div>
-    <button id="btnFilter" class="btn">Cetak Invoice</button>
-    <div id="invoiceResult"></div>
+  </div>
+
+  <!-- Tab Lihat Data -->
+  <div id="lihat" class="tabcontent">
+    <div class="card">
+      <h2>Data Penjualan</h2>
+      <table id="tableData">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Produk</th>
+            <th>Jumlah</th>
+            <th>Harga</th>
+            <th>Total</th>
+            <th>Pembeli</th>
+            <th>No. Invoice</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
