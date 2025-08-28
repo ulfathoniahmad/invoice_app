@@ -1,86 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Invoice Web</title>
-  <style>
-    body{font-family:sans-serif; margin:20px;}
-    input, select, button{margin:5px;}
-    table, th, td{border:1px solid black; border-collapse:collapse; padding:5px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Invoice</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h2>Tambah Invoice</h2>
-<form id="formInvoice">
-  <input type="date" id="tanggal" required>
-  <input type="text" id="namaProduk" placeholder="Nama Produk" required>
-  <input type="number" id="jumlah" placeholder="Jumlah" required>
-  <input type="number" id="harga" placeholder="Harga" required>
-  <select id="pembeli" required></select>
-  <button type="submit">Tambah Invoice</button>
-</form>
+<div class="container">
+  <h1>Web Invoice</h1>
 
-<h2>Cetak Invoice</h2>
-<input type="date" id="filterTanggal" required>
-<select id="filterPembeli" required></select>
-<button id="btnFilter">Cetak Invoice</button>
+  <!-- Form Tambah Invoice -->
+  <div class="card">
+    <h2>Tambah Invoice</h2>
+    <form id="formInvoice">
+      <div class="form-group">
+        <label for="tanggal">Tanggal</label>
+        <input type="date" id="tanggal" required>
+      </div>
+      <div class="form-group">
+        <label for="namaProduk">Nama Produk</label>
+        <input type="text" id="namaProduk" placeholder="Nama Produk" required>
+      </div>
+      <div class="form-group">
+        <label for="jumlah">Jumlah</label>
+        <input type="number" id="jumlah" placeholder="Jumlah" required>
+      </div>
+      <div class="form-group">
+        <label for="harga">Harga</label>
+        <input type="number" id="harga" placeholder="Harga" required>
+      </div>
+      <div class="form-group">
+        <label for="pembeli">Pembeli</label>
+        <select id="pembeli" required></select>
+      </div>
+      <button type="submit" class="btn">Tambah Invoice</button>
+    </form>
+  </div>
 
-<div id="invoiceResult"></div>
+  <!-- Filter Invoice -->
+  <div class="card">
+    <h2>Cetak Invoice</h2>
+    <div class="form-group">
+      <label for="filterTanggal">Tanggal</label>
+      <input type="date" id="filterTanggal" required>
+    </div>
+    <div class="form-group">
+      <label for="filterPembeli">Pembeli</label>
+      <select id="filterPembeli" required></select>
+    </div>
+    <button id="btnFilter" class="btn">Cetak Invoice</button>
+    <div id="invoiceResult"></div>
+  </div>
+</div>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxuwb0XAdjMRbBbx5H7PpgiSktMQYv7-ix8GAFClXL8vx6vElkvBsnQjq5rqPycxu5PGQ/exec"; // ganti dengan URL Apps Script mu
-
-// Ambil data pembeli dari sheet (hardcode atau Apps Script bisa dibuat endpoint)
-const pembeliList = ["SPPG Po 001","SPPG Slah 002"]; // contoh
-
-function fillPembeli(){
-  const select1 = document.getElementById('pembeli');
-  const select2 = document.getElementById('filterPembeli');
-  pembeliList.forEach(p=>{
-    const opt1 = document.createElement('option'); opt1.value=p; opt1.text=p;
-    const opt2 = document.createElement('option'); opt2.value=p; opt2.text=p;
-    select1.appendChild(opt1);
-    select2.appendChild(opt2);
-  });
-}
-
-fillPembeli();
-
-// Tambah Invoice
-document.getElementById('formInvoice').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const tanggal = document.getElementById('tanggal').value;
-  const namaProduk = document.getElementById('namaProduk').value;
-  const jumlah = parseInt(document.getElementById('jumlah').value);
-  const harga = parseFloat(document.getElementById('harga').value);
-  const pembeli = document.getElementById('pembeli').value;
-
-  const response = await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({tanggal, namaProduk, jumlah, harga, total: jumlah*harga, pembeli})
-  });
-
-  const result = await response.json();
-  alert("Invoice berhasil ditambahkan! No Invoice: "+result.noInvoice);
-});
-
-// Cetak Invoice
-document.getElementById('btnFilter').addEventListener('click', async function(){
-  const tanggal = document.getElementById('filterTanggal').value;
-  const pembeli = document.getElementById('filterPembeli').value;
-
-  const response = await fetch(`${API_URL}?function=getInvoiceJSON&tanggal=${tanggal}&pembeli=${encodeURIComponent(pembeli)}`);
-  const data = await response.json();
-
-  if(data.length==0){document.getElementById('invoiceResult').innerHTML="Tidak ada data."; return;}
-
-  let html = "<h3>Invoice</h3><table><tr><th>Produk</th><th>Jumlah</th><th>Harga</th><th>Total</th><th>No. Invoice</th></tr>";
-  data.forEach(d=>{
-    html += `<tr><td>${d.namaProduk}</td><td>${d.jumlah}</td><td>${d.harga}</td><td>${d.total}</td><td>${d.noInvoice}</td></tr>`;
-  });
-  html += "</table>";
-  document.getElementById('invoiceResult').innerHTML = html;
-});
-</script>
+<script src="script.js"></script>
 </body>
 </html>
