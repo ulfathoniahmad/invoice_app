@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyY2vajFg7_xa8tZemkiXVNR0t8c2oviW4UeNNTKlrbJQYDCOaG8Wz3X5RoJLgMJ2pBuQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzDSsowT4ZNbaOsE5LZjeS-j_HC9MLgZGK4ZIAvMWTxBQB2kOOWRC1enlbc27JddhW1PA/exec"; // ganti dengan Web App URL
 
 // Load dropdown pembeli
 async function loadPembeli(){
