@@ -1,555 +1,86 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Data & Invoice</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        :root {
-            --primary: #4a6da7;
-            --secondary: #e9ecef;
-            --success: #28a745;
-            --danger: #dc3545;
-            --dark: #343a40;
-            --light: #f8f9fa;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        h1, h2, h3 {
-            margin-bottom: 15px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #3a5a8a;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-        }
-        
-        .btn-danger:hover {
-            background-color: #bd2130;
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-        }
-        
-        .btn-success:hover {
-            background-color: #218838;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: var(--secondary);
-            font-weight: 600;
-        }
-        
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .invoice-preview {
-            background: white;
-            padding: 30px;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        
-        .invoice-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .invoice-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
-        .invoice-items {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        
-        .invoice-total {
-            text-align: right;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #f1f1f1;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-        }
-        
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .invoice-preview, .invoice-preview * {
-                visibility: visible;
-            }
-            .invoice-preview {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                padding: 10px;
-            }
-            
-            .invoice-details {
-                flex-direction: column;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Invoice Web</title>
+  <style>
+    body{font-family:sans-serif; margin:20px;}
+    input, select, button{margin:5px;}
+    table, th, td{border:1px solid black; border-collapse:collapse; padding:5px;}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Sistem Manajemen Data & Invoice</h1>
-            <p>Simpan data ke Google Sheets dan cetak invoice</p>
-        </header>
-        
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('data-entry')">Input Data</div>
-            <div class="tab" onclick="switchTab('data-view')">Lihat Data</div>
-            <div class="tab" onclick="switchTab('invoice-gen')">Buat Invoice</div>
-        </div>
-        
-        <div id="data-entry" class="tab-content active">
-            <div class="card">
-                <h2>Input Data Penjualan</h2>
-                <form id="dataForm">
-                    <div class="form-group">
-                        <label for="tanggal">Tanggal</label>
-                        <input type="date" id="tanggal" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="namaProduk">Nama Produk</label>
-                        <input type="text" id="namaProduk" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="jumlah">Jumlah</label>
-                        <input type="number" id="jumlah" min="1" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="harga">Harga</label>
-                        <input type="number" id="harga" min="0" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pembeli">Pembeli</label>
-                        <select id="pembeli" required>
-                            <option value="">Pilih Pembeli</option>
-                            <option value="SPPG Po">SPPG Po (001)</option>
-                            <option value="SPPG Slah">SPPG Slah (002)</option>
-                            <!-- Tambahkan lebih banyak opsi jika diperlukan -->
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="btn-success">Simpan Data</button>
-                </form>
-            </div>
-        </div>
-        
-        <div id="data-view" class="tab-content">
-            <div class="card">
-                <h2>Data Tersimpan</h2>
-                <button onclick="loadData()" class="no-print">Muat Ulang Data</button>
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Nama Produk</th>
-                            <th>Jumlah</th>
-                            <th>Harga</th>
-                            <th>Total</th>
-                            <th>Pembeli</th>
-                            <th>No. Invoice</th>
-                            <th class="no-print">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data akan diisi oleh JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div id="invoice-gen" class="tab-content">
-            <div class="card">
-                <h2>Buat Invoice</h2>
-                <div class="form-group">
-                    <label for="selectInvoice">Pilih Data untuk Invoice</label>
-                    <select id="selectInvoice" onchange="updateInvoicePreview()">
-                        <option value="">Pilih berdasarkan Pembeli</option>
-                        <option value="SPPG Po">SPPG Po</option>
-                        <option value="SPPG Slah">SPPG Slah</option>
-                    </select>
-                </div>
-                
-                <div class="invoice-preview" id="invoicePreview">
-                    <div class="invoice-header">
-                        <h2>INVOICE</h2>
-                        <p id="invoiceNumber">No: INV/TTTTMMHH/ID Pembeli/SJM</p>
-                    </div>
-                    
-                    <div class="invoice-details">
-                        <div>
-                            <p><strong>Kepada:</strong></p>
-                            <p id="invPembeli">Nama Pembeli</p>
-                        </div>
-                        <div>
-                            <p><strong>Tanggal:</strong> <span id="invTanggal">-</span></p>
-                        </div>
-                    </div>
-                    
-                    <table class="invoice-items">
-                        <thead>
-                            <tr>
-                                <th>Nama Produk</th>
-                                <th>Jumlah</th>
-                                <th>Harga</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invItems">
-                            <!-- Item akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
-                    
-                    <div class="invoice-total">
-                        <p>Total: Rp <span id="invTotal">0</span></p>
-                    </div>
-                </div>
-                
-                <button onclick="printInvoice()" class="no-print" style="margin-top: 20px;">Cetak Invoice</button>
-            </div>
-        </div>
-    </div>
+<h2>Tambah Invoice</h2>
+<form id="formInvoice">
+  <input type="date" id="tanggal" required>
+  <input type="text" id="namaProduk" placeholder="Nama Produk" required>
+  <input type="number" id="jumlah" placeholder="Jumlah" required>
+  <input type="number" id="harga" placeholder="Harga" required>
+  <select id="pembeli" required></select>
+  <button type="submit">Tambah Invoice</button>
+</form>
 
-    <script>
-        // Konfigurasi untuk koneksi ke Google Sheets
-        // Catatan: Dalam implementasi nyata, Anda perlu membuat Google Apps Script
-        // yang akan berfungsi sebagai API untuk berinteraksi dengan Google Sheets
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxuwb0XAdjMRbBbx5H7PpgiSktMQYv7-ix8GAFClXL8vx6vElkvBsnQjq5rqPycxu5PGQ/exec'; // Ganti dengan URL Google Apps Script Anda
-        
-        // Data sementara untuk simulasi (akan digantikan dengan data dari Google Sheets)
-        let dataTransaksi = [];
-        
-        // Fungsi untuk beralih tab
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            
-            if (tabName === 'data-view') {
-                loadData();
-            } else if (tabName === 'invoice-gen') {
-                updateInvoicePreview();
-            }
-        }
-        
-        // Format angka ke Rupiah
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', { 
-                style: 'currency', 
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(angka);
-        }
-        
-        // Generate nomor invoice
-        function generateInvoiceNumber(pembeli, tanggal) {
-            const date = new Date(tanggal);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            
-            let idPembeli = '000';
-            if (pembeli === 'SPPG Po') idPembeli = '001';
-            if (pembeli === 'SPPG Slah') idPembeli = '002';
-            
-            // SJM adalah singkatan dari sistem (bisa diganti sesuai kebutuhan)
-            return `INV/${year}${month}${day}/${idPembeli}/SJM`;
-        }
-        
-        // Handle form submission
-        document.getElementById('dataForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const tanggal = document.getElementById('tanggal').value;
-            const namaProduk = document.getElementById('namaProduk').value;
-            const jumlah = parseInt(document.getElementById('jumlah').value);
-            const harga = parseInt(document.getElementById('harga').value);
-            const pembeli = document.getElementById('pembeli').value;
-            const total = jumlah * harga;
-            
-            const noInvoice = generateInvoiceNumber(pembeli, tanggal);
-            
-            // Simulasi penyimpanan data (dalam implementasi nyata, ini akan mengirim data ke Google Sheets)
-            const newData = {
-                tanggal,
-                namaProduk,
-                jumlah,
-                harga,
-                total,
-                pembeli,
-                noInvoice
-            };
-            
-            dataTransaksi.push(newData);
-            
-            // Simpan ke Google Sheets (dalam implementasi nyata)
-            try {
-                // Kode untuk mengirim data ke Google Sheets melalui Google Apps Script
-                /*
-                const response = await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify(newData),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const result = await response.json();
-                console.log('Success:', result);
-                */
-                
-                alert('Data berhasil disimpan!');
-                document.getElementById('dataForm').reset();
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat menyimpan data.');
-            }
-        });
-        
-        // Memuat data dari Google Sheets (simulasi)
-        function loadData() {
-            const tableBody = document.querySelector('#dataTable tbody');
-            tableBody.innerHTML = '';
-            
-            if (dataTransaksi.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Tidak ada data</td></tr>';
-                return;
-            }
-            
-            dataTransaksi.forEach((data, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${data.tanggal}</td>
-                    <td>${data.namaProduk}</td>
-                    <td>${data.jumlah}</td>
-                    <td>${formatRupiah(data.harga)}</td>
-                    <td>${formatRupiah(data.total)}</td>
-                    <td>${data.pembeli}</td>
-                    <td>${data.noInvoice}</td>
-                    <td class="actions no-print">
-                        <button onclick="deleteData(${index})" class="btn-danger">Hapus</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-        
-        // Hapus data (simulasi)
-        function deleteData(index) {
-            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                dataTransaksi.splice(index, 1);
-                loadData();
-                alert('Data berhasil dihapus!');
-            }
-        }
-        
-        // Update preview invoice
-        function updateInvoicePreview() {
-            const pembeli = document.getElementById('selectInvoice').value;
-            if (!pembeli) return;
-            
-            // Filter data berdasarkan pembeli
-            const dataPembeli = dataTransaksi.filter(item => item.pembeli === pembeli);
-            if (dataPembeli.length === 0) {
-                alert('Tidak ada data untuk pembeli ini.');
-                return;
-            }
-            
-            // Update info invoice
-            document.getElementById('invPembeli').textContent = pembeli;
-            document.getElementById('invTanggal').textContent = new Date().toLocaleDateString('id-ID');
-            
-            // Generate nomor invoice
-            const noInvoice = generateInvoiceNumber(pembeli, new Date());
-            document.getElementById('invoiceNumber').textContent = `No: ${noInvoice}`;
-            
-            // Update items
-            const invItems = document.getElementById('invItems');
-            invItems.innerHTML = '';
-            
-            let totalSemua = 0;
-            
-            dataPembeli.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.namaProduk}</td>
-                    <td>${item.jumlah}</td>
-                    <td>${formatRupiah(item.harga)}</td>
-                    <td>${formatRupiah(item.total)}</td>
-                `;
-                invItems.appendChild(row);
-                totalSemua += item.total;
-            });
-            
-            // Update total
-            document.getElementById('invTotal').textContent = formatRupiah(totalSemua);
-        }
-        
-        // Cetak invoice
-        function printInvoice() {
-            window.print();
-        }
-        
-        // Inisialisasi
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set tanggal hari ini sebagai default
-            const today = new Date().toISOString().substr(0, 10);
-            document.getElementById('tanggal').value = today;
-            
-            // Load data awal
-            loadData();
-        });
-    </script>
+<h2>Cetak Invoice</h2>
+<input type="date" id="filterTanggal" required>
+<select id="filterPembeli" required></select>
+<button id="btnFilter">Cetak Invoice</button>
+
+<div id="invoiceResult"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbx8R9aCwd-9Uid401x2zX9y5jBW6yw0Dsj7Lr5IfIC5/dev"; // ganti dengan URL Apps Script mu
+
+// Ambil data pembeli dari sheet (hardcode atau Apps Script bisa dibuat endpoint)
+const pembeliList = ["SPPG Po 001","SPPG Slah 002"]; // contoh
+
+function fillPembeli(){
+  const select1 = document.getElementById('pembeli');
+  const select2 = document.getElementById('filterPembeli');
+  pembeliList.forEach(p=>{
+    const opt1 = document.createElement('option'); opt1.value=p; opt1.text=p;
+    const opt2 = document.createElement('option'); opt2.value=p; opt2.text=p;
+    select1.appendChild(opt1);
+    select2.appendChild(opt2);
+  });
+}
+
+fillPembeli();
+
+// Tambah Invoice
+document.getElementById('formInvoice').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const tanggal = document.getElementById('tanggal').value;
+  const namaProduk = document.getElementById('namaProduk').value;
+  const jumlah = parseInt(document.getElementById('jumlah').value);
+  const harga = parseFloat(document.getElementById('harga').value);
+  const pembeli = document.getElementById('pembeli').value;
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({tanggal, namaProduk, jumlah, harga, total: jumlah*harga, pembeli})
+  });
+
+  const result = await response.json();
+  alert("Invoice berhasil ditambahkan! No Invoice: "+result.noInvoice);
+});
+
+// Cetak Invoice
+document.getElementById('btnFilter').addEventListener('click', async function(){
+  const tanggal = document.getElementById('filterTanggal').value;
+  const pembeli = document.getElementById('filterPembeli').value;
+
+  const response = await fetch(`${API_URL}?function=getInvoiceJSON&tanggal=${tanggal}&pembeli=${encodeURIComponent(pembeli)}`);
+  const data = await response.json();
+
+  if(data.length==0){document.getElementById('invoiceResult').innerHTML="Tidak ada data."; return;}
+
+  let html = "<h3>Invoice</h3><table><tr><th>Produk</th><th>Jumlah</th><th>Harga</th><th>Total</th><th>No. Invoice</th></tr>";
+  data.forEach(d=>{
+    html += `<tr><td>${d.namaProduk}</td><td>${d.jumlah}</td><td>${d.harga}</td><td>${d.total}</td><td>${d.noInvoice}</td></tr>`;
+  });
+  html += "</table>";
+  document.getElementById('invoiceResult').innerHTML = html;
+});
+</script>
 </body>
 </html>
