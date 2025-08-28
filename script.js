@@ -12,18 +12,28 @@ function openTab(evt, tabName){
 
 // Ambil pembeli dari sheet
 async function loadPembeli(){
-  const res = await fetch(API_URL+"?function=getPembeliList");
-  const data = await res.json();
-  const select1 = document.getElementById('pembeli');
-  const select2 = document.getElementById('filterPembeli');
-  select1.innerHTML=""; select2.innerHTML="";
-  data.forEach(p=>{
-    const opt1 = document.createElement('option'); opt1.value=p; opt1.text=p;
-    const opt2 = document.createElement('option'); opt2.value=p; opt2.text=p;
-    select1.appendChild(opt1); select2.appendChild(opt2);
-  });
+  try{
+    const res = await fetch(`${API_URL}?function=getPembeliList`);
+    if(!res.ok) throw new Error("Fetch error: "+res.status);
+    const data = await res.json();
+
+    const select1 = document.getElementById('pembeli');
+    const select2 = document.getElementById('filterPembeli');
+    select1.innerHTML=""; select2.innerHTML="";
+    
+    data.forEach(p=>{
+      const opt1 = document.createElement('option'); opt1.value=p; opt1.text=p;
+      const opt2 = document.createElement('option'); opt2.value=p; opt2.text=p;
+      select1.appendChild(opt1); select2.appendChild(opt2);
+    });
+  }catch(err){
+    console.error(err);
+    alert("Gagal load pembeli. Cek Apps Script dan URL Web App.");
+  }
 }
+
 loadPembeli();
+
 
 // Tambah Invoice
 document.getElementById('formInvoice').addEventListener('submit', async function(e){
