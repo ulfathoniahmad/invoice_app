@@ -1,41 +1,26 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxnbm0CfJEPUYf8Quf2_ZXT_Tx8jQU7LBa_vWhLLHeXEXbWu22urgmoL7zfk498ZXG1/exec"; // ganti dengan URL Web App Apps Script
+const API_URL = "https://script.google.com/macros/s/AKfycbzfcKJfe-TyIRlgdWjVnjEcFjsLk2j3O4J0avai96H3dm6ga_O7ehYYeHkRYdRFddi30w/exec";
 
-// Tabs
-function openTab(evt, tabName){
-  document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tabcontent').forEach(tc => tc.classList.remove('active'));
-  evt.currentTarget.classList.add('active');
-  document.getElementById(tabName).classList.add('active');
-
-  if(tabName==='lihat') loadAllData();
-}
-
-// Ambil pembeli dari sheet
+// Load pembeli ke dropdown
 async function loadPembeli(){
   try{
     const res = await fetch(`${API_URL}?function=getPembeliList`);
-    if(!res.ok) throw new Error("Fetch error: "+res.status);
     const data = await res.json();
-
     const select1 = document.getElementById('pembeli');
     const select2 = document.getElementById('filterPembeli');
     select1.innerHTML=""; select2.innerHTML="";
-    
     data.forEach(p=>{
       const opt1 = document.createElement('option'); opt1.value=p; opt1.text=p;
       const opt2 = document.createElement('option'); opt2.value=p; opt2.text=p;
-      select1.appendChild(opt1); select2.appendChild(opt2);
+      select1.appendChild(opt1);
+      select2.appendChild(opt2);
     });
   }catch(err){
-    console.error(err);
+    console.error("Error load pembeli:", err);
     alert("Gagal load pembeli. Cek Apps Script dan URL Web App.");
   }
 }
 
-loadPembeli();
-
-
-// Tambah Invoice
+// Tambah invoice
 document.getElementById('formInvoice').addEventListener('submit', async function(e){
   e.preventDefault();
   const tanggal = document.getElementById('tanggal').value;
@@ -54,18 +39,22 @@ document.getElementById('formInvoice').addEventListener('submit', async function
   document.getElementById('formInvoice').reset();
 });
 
-// Cetak Invoice
+// Cetak invoice (per tanggal & pembeli)
 document.getElementById('btnFilter').addEventListener('click', async function(){
   const tanggal = document.getElementById('filterTanggal').value;
   const pembeli = document.getElementById('filterPembeli').value;
 
-  const res = await fetch(`${API_URL}?function=getInvoiceJSON&tanggal=${tanggal}&pembeli=${encodeURIComponent(pembeli)}`);
+  const res = await fetch(`${API_URL}?function=getAllDataJSON`);
   const data = await res.json();
+  const filtered = data.filter(d=>d.tanggal===tanggal && d.pembeli===pembeli);
 
-  if(data.length==0){document.getElementById('invoiceResult').innerHTML="Tidak ada data."; return;}
+  if(filtered.length==0){
+    document.getElementById('invoiceResult').innerHTML="Tidak ada data.";
+    return;
+  }
 
   let html = "<h3>Invoice</h3><table><tr><th>Produk</th><th>Jumlah</th><th>Harga</th><th>Total</th><th>No. Invoice</th></tr>";
-  data.forEach(d=>{
+  filtered.forEach(d=>{
     html += `<tr><td>${d.namaProduk}</td><td>${d.jumlah}</td><td>${d.harga}</td><td>${d.total}</td><td>${d.noInvoice}</td></tr>`;
   });
   html += "</table>";
@@ -74,7 +63,7 @@ document.getElementById('btnFilter').addEventListener('click', async function(){
 
 // Lihat semua data
 async function loadAllData(){
-  const res = await fetch(API_URL+"?function=getAllDataJSON");
+  const res = await fetch(`${API_URL}?function=getAllDataJSON`);
   const data = await res.json();
   const tbody = document.querySelector('#tableData tbody');
   tbody.innerHTML="";
@@ -84,3 +73,14 @@ async function loadAllData(){
     tbody.appendChild(tr);
   });
 }
+
+// Tabs
+function openTab(evt, tabName){
+  document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tabcontent').forEach(tc => tc.classList.remove('active'));
+  evt.currentTarget.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+  if(tabName==='lihat') loadAllData();
+}
+
+loadPembeli();
