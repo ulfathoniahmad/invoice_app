@@ -1,92 +1,517 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web Invoice</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Penjualan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .invoice-print {
+            display: none;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .invoice-print, .invoice-print * {
+                visibility: visible;
+            }
+            .invoice-print {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Sistem Penjualan</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('tambah')">Tambah Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('lihat')">Lihat Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('cetak')">Cetak Invoice</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<div class="container">
-  <h1>Web Invoice</h1>
+    <div class="container mt-4">
+        <!-- Section Tambah Data -->
+        <div id="tambah" class="section active">
+            <h2>Tambah Data Penjualan</h2>
+            <form id="formPenjualan">
+                <div class="mb-3">
+                    <label for="tanggal" class="form-label">Tanggal</label>
+                    <input type="date" class="form-control" id="tanggal" required>
+                </div>
+                <div class="mb-3">
+                    <label for="produk" class="form-label">Nama Produk</label>
+                    <input type="text" class="form-control" id="produk" required>
+                </div>
+                <div class="mb-3">
+                    <label for="jumlah" class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" id="jumlah" min="1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="harga" class="form-label">Harga</label>
+                    <input type="number" class="form-control" id="harga" min="0" required>
+                </div>
+                <div class="mb-3">
+                    <label for="pembeli" class="form-label">Pembeli</label>
+                    <select class="form-control" id="pembeli" required>
+                        <option value="">Pilih Pembeli</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+        </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tablink active" onclick="openTab(event,'tambah')">Tambah Invoice</button>
-    <button class="tablink" onclick="openTab(event,'cetak')">Cetak Invoice</button>
-    <button class="tablink" onclick="openTab(event,'lihat')">Lihat Data</button>
-  </div>
+        <!-- Section Lihat Data -->
+        <div id="lihat" class="section">
+            <h2>Data Penjualan</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>No. Invoice</th>
+                            <th>Pembeli</th>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Harga</th>
+                            <th>Total</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataPenjualan">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-  <!-- Tab Tambah -->
-  <div id="tambah" class="tabcontent active">
-    <div class="card">
-      <h2>Tambah Invoice</h2>
-      <form id="formInvoice">
-        <div class="form-group">
-          <label for="tanggal">Tanggal</label>
-          <input type="date" id="tanggal" required>
+        <!-- Section Cetak Invoice -->
+        <div id="cetak" class="section">
+            <h2>Cetak Invoice</h2>
+            <div class="mb-3">
+                <label for="cariInvoice" class="form-label">Cari Berdasarkan No. Invoice</label>
+                <input type="text" class="form-control" id="cariInvoice" placeholder="Masukkan No. Invoice">
+                <button class="btn btn-primary mt-2" onclick="cariDataInvoice()">Cari</button>
+            </div>
+            <div id="hasilPencarian" class="mt-3">
+                <!-- Hasil pencarian akan ditampilkan di sini -->
+            </div>
         </div>
-        <div class="form-group">
-          <label for="namaProduk">Nama Produk</label>
-          <input type="text" id="namaProduk" placeholder="Nama Produk" required>
-        </div>
-        <div class="form-group">
-          <label for="jumlah">Jumlah</label>
-          <input type="number" id="jumlah" placeholder="Jumlah" required>
-        </div>
-        <div class="form-group">
-          <label for="harga">Harga</label>
-          <input type="number" id="harga" placeholder="Harga" required>
-        </div>
-        <div class="form-group">
-          <label for="pembeli">Pembeli</label>
-          <select id="pembeli" required></select>
-        </div>
-        <button type="submit" class="btn">Tambah Invoice</button>
-      </form>
     </div>
-  </div>
 
-  <!-- Tab Cetak -->
-  <div id="cetak" class="tabcontent">
-    <div class="card">
-      <h2>Cetak Invoice</h2>
-      <div class="form-group">
-        <label for="filterTanggal">Tanggal</label>
-        <input type="date" id="filterTanggal" required>
-      </div>
-      <div class="form-group">
-        <label for="filterPembeli">Pembeli</label>
-        <select id="filterPembeli" required></select>
-      </div>
-      <button id="btnFilter" class="btn">Cetak Invoice</button>
-      <div id="invoiceResult"></div>
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Data Penjualan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEdit">
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label for="editTanggal" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="editTanggal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProduk" class="form-label">Nama Produk</label>
+                            <input type="text" class="form-control" id="editProduk" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editJumlah" class="form-label">Jumlah</label>
+                            <input type="number" class="form-control" id="editJumlah" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editHarga" class="form-label">Harga</label>
+                            <input type="number" class="form-control" id="editHarga" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPembeli" class="form-label">Pembeli</label>
+                            <select class="form-control" id="editPembeli" required>
+                                <option value="">Pilih Pembeli</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="simpanEdit()">Simpan Perubahan</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Tab Lihat Data -->
-  <div id="lihat" class="tabcontent">
-    <div class="card">
-      <h2>Data Penjualan</h2>
-      <table id="tableData">
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Produk</th>
-            <th>Jumlah</th>
-            <th>Harga</th>
-            <th>Total</th>
-            <th>Pembeli</th>
-            <th>No. Invoice</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <!-- Template Invoice (tersembunyi sampai dicetak) -->
+    <div id="invoiceTemplate" class="invoice-print">
+        <!-- Template invoice akan diisi oleh JavaScript -->
     </div>
-  </div>
-</div>
 
-<script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // URL Google Apps Script Web App (ganti dengan URL Anda)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzwzZfprmyJYBs2jcjYyp4RdDUEaz_p_mX-14ZeAk_lUbHXed_xnKLBLr1ALB7A5faL0g/exec';
+
+        // Fungsi untuk menampilkan section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Fungsi untuk memuat data pembeli ke dropdown
+        async function loadPembeli() {
+            try {
+                const response = await fetch(`${scriptURL}?action=getPembeli`);
+                const pembeli = await response.json();
+                
+                const dropdown = document.getElementById('pembeli');
+                const editDropdown = document.getElementById('editPembeli');
+                
+                // Kosongkan dropdown kecuali opsi pertama
+                while(dropdown.options.length > 1) dropdown.remove(1);
+                while(editDropdown.options.length > 1) editDropdown.remove(1);
+                
+                // Tambahkan opsi pembeli
+                pembeli.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = p.nama;
+                    
+                    dropdown.appendChild(option.cloneNode(true));
+                    editDropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading pembeli:', error);
+                alert('Gagal memuat data pembeli');
+            }
+        }
+
+        // Fungsi untuk menghasilkan nomor invoice
+        function generateInvoice(tanggal, idPembeli) {
+            const now = new Date();
+            const tahun = now.getFullYear();
+            const bulan = String(now.getMonth() + 1).padStart(2, '0');
+            const hari = String(now.getDate()).padStart(2, '0');
+            const jam = String(now.getHours()).padStart(2, '0');
+            const menit = String(now.getMinutes()).padStart(2, '0');
+            
+            // Format: INV/TTTTBBHH/IDPEMBELI/JJMM
+            return `INV/${tahun}${bulan}${hari}/${idPembeli}/${jam}${menit}`;
+        }
+
+        // Handler form submit
+        document.getElementById('formPenjualan').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const tanggal = document.getElementById('tanggal').value;
+            const produk = document.getElementById('produk').value;
+            const jumlah = document.getElementById('jumlah').value;
+            const harga = document.getElementById('harga').value;
+            const pembeli = document.getElementById('pembeli').value;
+            const total = jumlah * harga;
+            
+            // Dapatkan nama pembeli dari dropdown
+            const selectedOption = document.getElementById('pembeli').options[document.getElementById('pembeli').selectedIndex];
+            const namaPembeli = selectedOption.text;
+            
+            // Generate nomor invoice
+            const noInvoice = generateInvoice(tanggal, pembeli);
+            
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'addPenjualan',
+                        data: {
+                            tanggal,
+                            produk,
+                            jumlah,
+                            harga,
+                            total,
+                            pembeli: namaPembeli,
+                            idPembeli: pembeli,
+                            invoice: noInvoice
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Data berhasil disimpan!');
+                    document.getElementById('formPenjualan').reset();
+                } else {
+                    alert('Gagal menyimpan data: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyimpan data');
+            }
+        });
+
+        // Fungsi untuk memuat data penjualan
+        async function loadDataPenjualan() {
+            try {
+                const response = await fetch(`${scriptURL}?action=getPenjualan`);
+                const data = await response.json();
+                
+                const tableBody = document.getElementById('dataPenjualan');
+                tableBody.innerHTML = '';
+                
+                data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.tanggal}</td>
+                        <td>${item.invoice}</td>
+                        <td>${item.pembeli}</td>
+                        <td>${item.produk}</td>
+                        <td>${item.jumlah}</td>
+                        <td>${item.harga}</td>
+                        <td>${item.total}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editData(${index})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="hapusData('${item.id}')">Hapus</button>
+                        </td>
+                    `;
+                    row.dataset.id = item.id;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Gagal memuat data penjualan');
+            }
+        }
+
+        // Fungsi untuk mengedit data
+        function editData(index) {
+            const row = document.getElementById('dataPenjualan').children[index];
+            const cells = row.getElementsByTagName('td');
+            
+            document.getElementById('editId').value = row.dataset.id;
+            document.getElementById('editTanggal').value = cells[0].textContent;
+            document.getElementById('editProduk').value = cells[3].textContent;
+            document.getElementById('editJumlah').value = cells[4].textContent;
+            document.getElementById('editHarga').value = cells[5].textContent;
+            
+            // Set pembeli (harus sudah diload sebelumnya)
+            const pembeliDropdown = document.getElementById('editPembeli');
+            for (let i = 0; i < pembeliDropdown.options.length; i++) {
+                if (pembeliDropdown.options[i].text === cells[2].textContent) {
+                    pembeliDropdown.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            // Tampilkan modal
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        // Fungsi untuk menyimpan edit
+        async function simpanEdit() {
+            const id = document.getElementById('editId').value;
+            const tanggal = document.getElementById('editTanggal').value;
+            const produk = document.getElementById('editProduk').value;
+            const jumlah = document.getElementById('editJumlah').value;
+            const harga = document.getElementById('editHarga').value;
+            const pembeli = document.getElementById('editPembeli').value;
+            const total = jumlah * harga;
+            
+            // Dapatkan nama pembeli dari dropdown
+            const selectedOption = document.getElementById('editPembeli').options[document.getElementById('editPembeli').selectedIndex];
+            const namaPembeli = selectedOption.text;
+            
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'editPenjualan',
+                        id: id,
+                        data: {
+                            tanggal,
+                            produk,
+                            jumlah,
+                            harga,
+                            total,
+                            pembeli: namaPembeli,
+                            idPembeli: pembeli
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Data berhasil diupdate!');
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    loadDataPenjualan();
+                } else {
+                    alert('Gagal mengupdate data: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengupdate data');
+            }
+        }
+
+        // Fungsi untuk menghapus data
+        async function hapusData(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+            
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'deletePenjualan',
+                        id: id
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Data berhasil dihapus!');
+                    loadDataPenjualan();
+                } else {
+                    alert('Gagal menghapus data: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus data');
+            }
+        }
+
+        // Fungsi untuk mencari data invoice
+        async function cariDataInvoice() {
+            const noInvoice = document.getElementById('cariInvoice').value.trim();
+            if (!noInvoice) {
+                alert('Masukkan nomor invoice terlebih dahulu');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${scriptURL}?action=getByInvoice&invoice=${encodeURIComponent(noInvoice)}`);
+                const data = await response.json();
+                
+                const hasilDiv = document.getElementById('hasilPencarian');
+                
+                if (data.length === 0) {
+                    hasilDiv.innerHTML = '<div class="alert alert-warning">Tidak ditemukan data dengan nomor invoice tersebut</div>';
+                    return;
+                }
+                
+                // Tampilkan data
+                let html = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Data Invoice: ${noInvoice}</h5>
+                            <button class="btn btn-sm btn-success" onclick="cetakInvoice('${noInvoice}')">Cetak Invoice</button>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Tanggal:</strong> ${data[0].tanggal}</p>
+                            <p><strong>Pembeli:</strong> ${data[0].pembeli}</p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Produk</th>
+                                        <th>Jumlah</th>
+                                        <th>Harga</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                
+                let grandTotal = 0;
+                data.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.produk}</td>
+                            <td>${item.jumlah}</td>
+                            <td>${item.harga}</td>
+                            <td>${item.total}</td>
+                        </tr>
+                    `;
+                    grandTotal += parseFloat(item.total);
+                });
+                
+                html += `
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3">Grand Total</th>
+                                        <th>${grandTotal}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                hasilDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mencari data invoice');
+            }
+        }
+
+        // Fungsi untuk mencetak invoice
+        function cetakInvoice(noInvoice) {
+            // Ambil data dari hasil pencarian
+            const card = document.querySelector('#hasilPencarian .card');
+            
+            // Salin konten ke template invoice
+            const invoiceTemplate = document.getElementById('invoiceTemplate');
+            invoiceTemplate.innerHTML = card.innerHTML;
+            
+            // Cetak
+            window.print();
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPembeli();
+            
+            // Jika di section lihat data, load data penjualan
+            if (document.getElementById('lihat').classList.contains('active')) {
+                loadDataPenjualan();
+            }
+        });
+    </script>
 </body>
 </html>
